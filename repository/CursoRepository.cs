@@ -37,11 +37,13 @@ namespace Learnix.Repositorio
 
         public List<Curso> BuscarCursosPorNome(string termoPesquisa)
         {
-            // LINQ substitui SQL raw para respeitar o mapeamento TPH do EF
-            return _context.Cursos
-                .Where(c => c.Titulo.Contains(termoPesquisa))
-                .Include(c => c.Categoria)
-                .Include(c => c.Instrutor)
+            using var context = new LearnixDbContext();
+
+            // Query com SQL puro e fazendo uso do {0} para previnir SQL Injection
+            string query = "SELECT * FROM Cursos WHERE Titulo LIKE {0}";
+
+            return context.Cursos
+                .FromSqlRaw(query, $"%{termoPesquisa}%")
                 .ToList();
         }
 
