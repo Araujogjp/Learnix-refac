@@ -6,6 +6,18 @@ using System.Linq;
 
 namespace Learnix.Repositorio
 {
+    /// <summary>
+    /// Repositório de Curso. Responsabilidade única: encapsular o acesso a dados
+    /// da entidade Curso. Não valida regras de negócio, não formata para a View,
+    /// não orquestra fluxos — apenas persistência.
+    /// 
+    /// SOLID — SRP (Single Responsibility Principle): a classe tem uma única razão
+    /// para mudar (alterações na forma de consultar/persistir cursos).
+    /// 
+    /// Clean Code: o método BuscarCursosPorNome usa parâmetro {0} no SQL puro
+    /// (FromSqlRaw) para prevenir SQL Injection — boa prática de segurança
+    /// explícita no código.
+    /// </summary>
     public class CursoRepository : ICursoRepository
     {
         private readonly LearnixDbContext _context;
