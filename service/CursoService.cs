@@ -1,58 +1,33 @@
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Learnix.data;
 using Learnix.model;
+using Learnix.Repositorio;
 
 namespace Learnix.Services
 {
     /// <summary>
-    /// Servico de Curso. Encapsula consultas usadas pela TelaMenu.
+    /// Serviço de Curso. Orquestra regras de negócio sobre cursos.
+    /// SOLID — DIP (Dependency Inversion Principle):
+    /// depende da abstração ICursoRepository, não de implementação concreta nem de DbContext.
     /// </summary>
     public class CursoService : ICursoService
     {
-        private readonly LearnixDbContext _context;
+        private readonly ICursoRepository _cursoRepository;
 
-        public CursoService(LearnixDbContext context)
+        public CursoService(ICursoRepository cursoRepository)
         {
-            _context = context;
+            _cursoRepository = cursoRepository;
         }
 
         public List<Curso> ListarTodos()
-        {
-            return _context.Cursos
-                .Include(c => c.Categoria)
-                .Include(c => c.Instrutor)
-                .ToList();
-        }
+            => _cursoRepository.BuscarTodos();
 
         public List<Curso> ListarPorCategoria(string nomeCategoria)
-        {
-            return _context.Cursos
-                .Include(c => c.Categoria)
-                .Include(c => c.Instrutor)
-                .Where(c => c.Categoria.Nome == nomeCategoria)
-                .ToList();
-        }
+            => _cursoRepository.BuscarPorCategoria(nomeCategoria);
 
         public List<Curso> BuscarPorTermo(string termo)
-        {
-            string termoLower = (termo ?? string.Empty).ToLower();
-            return _context.Cursos
-                .Include(c => c.Categoria)
-                .Include(c => c.Instrutor)
-                .Where(c => c.Titulo.ToLower().Contains(termoLower))
-                .ToList();
-        }
+            => _cursoRepository.BuscarCursosPorNome(termo);
 
         public Curso? BuscarPorId(int id)
-        {
-            return _context.Cursos
-                .Include(c => c.Categoria)
-                .Include(c => c.Instrutor)
-                .Include(c => c.Modulos)
-                    .ThenInclude(m => m.Aulas)
-                .FirstOrDefault(c => c.Id == id);
-        }
+            => _cursoRepository.BuscarPorId(id);
     }
 }
