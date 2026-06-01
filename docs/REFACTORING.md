@@ -282,3 +282,29 @@ Nenhum do ponto de vista do usuário. A caixa de busca continua filtrando cursos
 - **SOLID-DIP:** comentários XML no construtor de `TelaMenu`, e nas classes `CursoController`, `CursoService` e `CursoRepository`.
 - **SQL manual (`FromSqlRaw`):** `repository/CursoRepository.cs`, método `BuscarCursosPorNome`.
 `
+---
+
+## [Sub-passo 1.C] Documentação inline dos princípios SOLID e Clean Code
+
+**Data:** 01/06/2026
+**Motivação:** O documento da atividade exige explicitamente *"a aplicação e informação do local onde foi aplicado SOLID"* e *"a aplicação e informação do local onde foi aplicado Clean Code"*. Os sub-passos 1.A e 1.B aplicaram o DIP — este passo cobre os princípios SRP e OCP além de Clean Code, marcando inline (via XML doc) as classes onde cada princípio aparece de forma evidente.
+
+### Princípios documentados e onde encontrá-los
+
+| Princípio | Arquivo | O que evidencia |
+|---|---|---|
+| **SRP** — Single Responsibility | `repository/CursoRepository.cs` | Uma única razão para mudar: persistência de Curso. Não valida, não formata, não orquestra. |
+| **OCP** — Open/Closed | `model/Usuario.cs` | Aberta para extensão (novos tipos de usuário via herança), fechada para modificação (contrato base estável; método abstrato força comportamento próprio em cada subclasse). |
+| **DIP** — Dependency Inversion | `control/CursoController.cs`, `service/CursoService.cs`, `view/TelaMenu.xaml.cs` | Cobertos nos sub-passos 1.A e 1.B. Cada camada depende da abstração da vizinha. |
+| **Clean Code** | `repository/CursoRepository.cs` (método `BuscarCursosPorNome`) | Uso de parâmetro `{0}` no `FromSqlRaw` previne SQL Injection — boa prática de segurança explícita no código. Nomes de métodos auto-descritivos em português, sem abreviações ambíguas. |
+
+### Sobre LSP e ISP
+
+LSP (Liskov Substitution) e ISP (Interface Segregation) também estão presentes no projeto de forma implícita:
+- **LSP:** `Aluno` e `Instrutor` substituem `Usuario` em qualquer contexto onde a classe base é esperada (ex.: `AuthService.Autenticar`).
+- **ISP:** As interfaces `ICursoService`, `ICursoRepository` e `IPlanejamento` são segregadas por responsabilidade — cada cliente conhece apenas o contrato que efetivamente usa.
+
+Esses dois princípios não receberam comentário inline próprio para evitar poluição de código, mas podem ser defendidos oralmente apontando para a herança em `model/Aluno.cs`/`model/Instrutor.cs` (LSP) e para a estrutura das interfaces em `service/` e `repository/` (ISP).
+
+### Impacto funcional
+Nenhum. Toda a alteração é em comentários XML — zero impacto em runtime ou comportamento.
