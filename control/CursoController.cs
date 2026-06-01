@@ -1,23 +1,25 @@
-﻿using Learnix.model;
-using Learnix.Repositorio;
+using Learnix.model;
+using Learnix.Services;
 using System.Collections.Generic;
 
 namespace Learnix.Controllers
 {
+    /// <summary>
+    /// Controller de Curso. Camada de orquestração entre a View e o Service.
+    /// SOLID — DIP: depende da abstração ICursoService, nunca acessa Repository ou DbContext diretamente.
+    /// </summary>
     public class CursoController
     {
-        private readonly ICursoRepository _cursoRepository;
+        private readonly ICursoService _cursoService;
 
-        // Injeção de Dependência do Repositório
-        public CursoController(ICursoRepository cursoRepository)
+        public CursoController(ICursoService cursoService)
         {
-            _cursoRepository = cursoRepository;
+            _cursoService = cursoService;
         }
 
         public List<Curso> BuscarCursos(string termoPesquisa)
         {
-            List<Curso> cursos = _cursoRepository.BuscarCursosPorNome(termoPesquisa);
-            return cursos;
+            return _cursoService.BuscarPorTermo(termoPesquisa);
         }
     }
 }
