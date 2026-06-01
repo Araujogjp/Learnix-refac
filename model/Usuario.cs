@@ -4,7 +4,13 @@ namespace Learnix.model
 {
     /// <summary>
     /// Classe base abstrata para todos os usuários do sistema.
-    /// Telas: TelaLogin, TelaCadastro, TelaPerfil
+    /// Telas: TelaLogin, TelaCadastro, TelaPerfil.
+    /// 
+    /// SOLID — OCP (Open/Closed Principle): a hierarquia está aberta para extensão
+    /// (novos tipos de usuário podem ser criados herdando de Usuario — ex: Aluno,
+    /// Instrutor, e futuros como Coordenador) e fechada para modificação (o contrato
+    /// base permanece estável). O método abstrato ObterCaminhoDashboard força cada
+    /// subclasse a definir seu próprio comportamento sem alterar a classe base.
     /// </summary>
     public abstract class Usuario
     {
