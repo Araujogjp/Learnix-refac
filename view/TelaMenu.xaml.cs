@@ -5,8 +5,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Learnix.Controllers;
 using Learnix.data;
 using Learnix.model;
+using Learnix.Repositorio;
+using Learnix.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Learnix
@@ -16,9 +19,19 @@ namespace Learnix
         private Aluno? _aluno;
         private List<CursoMenuVM> _todosCursos = new();
 
+        // SOLID — DIP: a View depende da abstração Controller, que depende da abstração Service,
+        // que depende da abstração Repository. A View não conhece DbContext para operações de busca.
+        // Composition Root manual: a cadeia de dependências é construída uma única vez no construtor.
+        private readonly CursoController _cursoController;
+
         public TelaMenu()
         {
             InitializeComponent();
+
+            // Composition Root — montagem manual da cadeia DIP para a busca de cursos.
+            // View → Controller → Service → Repository → DbContext
+            var db = new LearnixDbContext();
+            _cursoController = new CursoController(new CursoService(new CursoRepository(db)));
         }
 
         public void DefinirAluno(Aluno aluno)
@@ -80,11 +93,28 @@ namespace Learnix
 
         private void AplicarFiltro()
         {
-            var filtrados = _todosCursos
-                .Where(c => TxtBusca.Text == "Buscar curso..." ||
-                            string.IsNullOrWhiteSpace(TxtBusca.Text) ||
-                            c.Titulo.Contains(TxtBusca.Text, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            string termo = TxtBusca.Text;
+
+            // Sem termo de busca → mostra a lista completa já carregada em memória
+            bool semBusca = string.IsNullOrWhiteSpace(termo) || termo == "Buscar curso...";
+
+            List<CursoMenuVM> filtrados;
+
+            if (semBusca)
+            {
+                filtrados = _todosCursos;
+            }
+            else
+            {
+                // COM termo de busca → delega para a cadeia Controller → Service → Repository.
+                // O Repository executa a busca via SQL puro (FromSqlRaw) — requisito da atividade
+                // de "pelo menos uma funcionalidade utilizar manipulação via SQL".
+                List<Curso> resultadoSql = _cursoController.BuscarCursos(termo);
+                var idsEncontrados = resultadoSql.Select(c => c.Id).ToHashSet();
+
+                // Cruza os IDs retornados pelo SQL com as VMs já enriquecidas (Categoria, Instrutor, etc.)
+                filtrados = _todosCursos.Where(c => idsEncontrados.Contains(c.CursoId)).ToList();
+            }
 
             if (filtrados.Count == 0)
             {
