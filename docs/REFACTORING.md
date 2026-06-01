@@ -277,7 +277,8 @@ private void AplicarFiltro()
 ### Impacto funcional
 Nenhum do ponto de vista do usuário. A caixa de busca continua filtrando cursos pelo título conforme o usuário digita, com o mesmo comportamento visual. A mudança interna é que, agora, quando há termo digitado, a consulta passa por `Controller → Service → Repository.FromSqlRaw`, validando o requisito de SQL manual em produção e expondo evidência arquitetural de MVC + SOLID-DIP.
 
-
----
-
+### Localização das evidências no código
+- **MVC em camadas:** `view/TelaMenu.xaml.cs` — construtor (montagem da cadeia) e método `AplicarFiltro` (consumo do controller).
+- **SOLID-DIP:** comentários XML no construtor de `TelaMenu`, e nas classes `CursoController`, `CursoService` e `CursoRepository`.
+- **SQL manual (`FromSqlRaw`):** `repository/CursoRepository.cs`, método `BuscarCursosPorNome`.
 `
