@@ -23,5 +23,3 @@ namespace Learnix.Controllers
         }
     }
 }
-
-// test
