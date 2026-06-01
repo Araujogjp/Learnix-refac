@@ -6,7 +6,7 @@ Este arquivo registra alterações estruturais e de código aplicadas ao projeto
 
 ## [Sub-passo 1.A] Refatoração: aplicar DIP em CursoService e CursoController
 
-Data: 01/06/2025
+Data: 01/06/2026
 
 Motivação: As camadas Service e Repository estavam paralelas (cada uma falando com DbContext). Endireitar para Controller → Service → Repository expõe evidência de SOLID-DIP e prepara o terreno para a TelaMenu consumir o FromSqlRaw do Repository via Controller (sub-passo 1.B).
 
